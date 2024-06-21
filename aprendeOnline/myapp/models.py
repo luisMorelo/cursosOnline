@@ -4,16 +4,34 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 
+
+# Modelo para el Instructor
+class Instructor(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.TextField()
+    photo = models.ImageField(upload_to='instructores/', blank=True, null=True)
+
+    def __str__(self):
+        return self.user.username
+
+
+
+
 # Modelo de la tabla curso
 class Curso(models.Model):
     titulo = models.CharField(max_length=255)
     descripcion = models.TextField()
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     imagen_curso = models.ImageField(upload_to='materiales/')
-    instructor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='cursos')
 
+    instructor = models.ForeignKey('Instructor', on_delete=models.CASCADE, related_name='cursos')
+
+   
     def __str__(self):
         return self.titulo
+    
+
+    
 
 # Modelo de la tabla inscripción
 class Inscripcion(models.Model):
