@@ -28,16 +28,12 @@
                         
                     </ul>
                     <form class="d-flex">
-                        <button class="btn btn-outline-dark" type="submit">
-                            <i class="bi-cart-fill me-1"></i>
-                            Carrito
-                            <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
-                        </button>
+                    
 
                         <button class="btn btn-outlin" type="submit" >
                             <i class=" "></i>
                             <label for="">
-                                <strong> Vienvenido: </strong> 
+                                <strong> Instructor activo: </strong> 
                             
                                 <label for="" style="color: green;" >{{nombres_usuarios}}</label>
                                 
@@ -54,8 +50,10 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Opciones</a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" href="#!">Mis cursos</a></li>
-                                    <li><a class="dropdown-item" href="#!">Tu perfil</a></li>
+                                    <li><a class="dropdown-item" href="#!">Perfil</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li><a class="dropdown-item" href="{% url 'cursos-instructor' %}">Mis cursos</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'crear-curso' %}">Crear curso</a></li>
                                     <li><hr class="dropdown-divider" /></li>
                                     <li><a class="dropdown-item" href="{% url 'cerrar-sesion' %}">Cerar sesion</a></li>
                                 </ul>
@@ -67,7 +65,7 @@
             </div>
         </nav>
         <!-- Header-->
-        <header class="bg-dark py-5 py-5" id="descripcion">
+        <header class="bg-success py-5 py-5" id="descripcion">
             <div class="container px-4 px-lg-5 my-5">
                 <div class="text-center text-white">
                     <h1 class="display-4 fw-bolder">Aprende Online</h1>

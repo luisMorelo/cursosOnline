@@ -67,6 +67,9 @@ class CursoForm(forms.ModelForm):
         return imagen
 
 
+
+
+
 #Formulario para el modelo Inscripción
 class InscripcionForm(ModelForm):
     
