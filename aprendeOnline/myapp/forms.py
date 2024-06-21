@@ -49,12 +49,22 @@ class LoginForms(AuthenticationForm):
 
 
 #Formulario para el modelo Curso
-class CursoForm(ModelForm):
-    
+class CursoForm(forms.ModelForm):
     class Meta:
         model = Curso
-        fields = ['titulo', 'descripcion']
+        fields = ['titulo', 'descripcion', 'imagen_curso']
 
+    def clean_imagen_curso(self):
+        imagen = self.cleaned_data.get('imagen_curso')
+
+        if imagen:
+            if imagen.content_type not in ['image/jpeg', 'image/png']:
+                raise forms.ValidationError('Solo se permiten archivos JPEG y PNG.')
+
+            if imagen.size > 5*1024*1024:  # 5MB
+                raise forms.ValidationError('El tamaño del archivo no debe exceder 5MB.')
+
+        return imagen
 
 
 #Formulario para el modelo Inscripción

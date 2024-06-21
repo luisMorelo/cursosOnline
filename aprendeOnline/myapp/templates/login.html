@@ -11,7 +11,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Login</title>
+    <title>Login - AprendeOnline</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -47,7 +47,7 @@
                                     </div>
 
 
-                                    <form class="user">
+                                    <form class="user" method="POST">
                                         {% csrf_token %}
                                         <div class="form-group">
                                             <input type="email" name="username" class="form-control form-control-user"
@@ -68,6 +68,7 @@
                                         <button class="btn btn-primary btn-user btn-block">
                                             Iniciar sesion
                                         </button>
+
                                         <hr>
                                         <a href="#" class="btn btn-google btn-user btn-block">
                                             <i class="fab fa-google fa-fw"></i> Login with Google
@@ -75,6 +76,10 @@
                                         <a href="#" class="btn btn-facebook btn-user btn-block">
                                             <i class="fab fa-facebook-f fa-fw"></i> Login with Facebook
                                         </a>
+
+                                        {% if error %}
+                                                <p ><h6 style="color: red;">{{ error }}</h6></p>
+                                        {% endif %}
                                     </form>
 
 
