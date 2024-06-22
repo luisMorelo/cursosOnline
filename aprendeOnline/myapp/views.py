@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render
 from .models import Curso, Inscripcion
@@ -124,13 +124,15 @@ def mi_vista_principal(request):
 @login_required
 def cursos_instructor(request):
 
+    cursos = Curso.objects.all()
     nombre_usuario = request.user.username
     form = CursoForm()
 
     if request.method == 'GET':
         return render(request, 'cursos-instructor.html', {
             'form': form, 
-            'nombres_usuarios': nombre_usuario 
+            'nombres_usuarios': nombre_usuario,
+            'cursos': cursos 
         })
 
 
@@ -164,22 +166,22 @@ def es_instructor(user):
     return hasattr(user, 'instructor')
 
 
-
-
 @user_passes_test(es_instructor)
 @login_required
 def crear_curso(request):
     if request.method == 'POST':
-        form = CursoForm(request.POST, request.FILES)
+        form = CursoForm(request.POST)
         if form.is_valid():
             curso = form.save(commit=False)
             curso.instructor = request.user.instructor
             curso.save()
             return redirect('cursos-instructor')
+        else:
+            return render(request, 'crear-curso.html', {'form': form, 'error': 'Formulario no válido. Por favor, corrige los errores.'})
     else:
         form = CursoForm()
+    
     return render(request, 'crear-curso.html', {'form': form})
-
 
 
 
@@ -187,3 +189,32 @@ def crear_curso(request):
 def lista_cursos(request):
     cursos = Curso.objects.all()
     return render(request, 'lista_cursos.html', {'cursos': cursos})
+
+
+
+@user_passes_test(es_instructor)
+@login_required
+def editar_curso(request, curso_id):
+    curso = get_object_or_404(Curso, id=curso_id, instructor=request.user.instructor)
+    if request.method == 'POST':
+        form = CursoForm(request.POST, instance=curso)
+        if form.is_valid():
+            form.save()
+            return redirect('cursos-instructor')
+        else:
+            return render(request, 'editar-curso.html', {'form': form, 'curso': curso, 'error': 'Formulario no válido. Por favor, corrige los errores.'})
+    else:
+        form = CursoForm(instance=curso)
+    
+    return render(request, 'editar-curso.html', {'form': form, 'curso': curso})
+
+
+@user_passes_test(es_instructor)
+@login_required
+def eliminar_curso(request, curso_id):
+    curso = get_object_or_404(Curso, id=curso_id, instructor=request.user.instructor)
+    if request.method == 'POST':
+        curso.delete()
+        return redirect('cursos-instructor')
+    
+    return render(request, 'eliminar-curso.html', {'curso': curso})

@@ -22,7 +22,7 @@ class Curso(models.Model):
     titulo = models.CharField(max_length=255)
     descripcion = models.TextField()
     fecha_creacion = models.DateTimeField(auto_now_add=True)
-    imagen_curso = models.ImageField(upload_to='materiales/')
+    
 
     instructor = models.ForeignKey('Instructor', on_delete=models.CASCADE, related_name='cursos')
 
