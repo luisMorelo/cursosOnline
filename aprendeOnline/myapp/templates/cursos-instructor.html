@@ -99,11 +99,11 @@
                             </div>
                             <!-- Product actions-->
                             <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Editar curso</a></div>
+                                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="{% url 'editar-curso' curso.id %}">Editar curso</a></div>
                             </div>
 
                             <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Eliminar curso</a></div>
+                                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="{% url 'eliminar-curso' curso.id %}">Eliminar curso</a></div>
                             </div>
                         </div>
                     </div>

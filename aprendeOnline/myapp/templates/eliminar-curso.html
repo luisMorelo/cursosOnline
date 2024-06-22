@@ -9,7 +9,7 @@
 <body>
     <div class="container mt-5">
         <h1>Eliminar curso</h1>
-        <p>¿Estás seguro de que quieres eliminar el curso "{{ curso.nombre }}"?</p>
+        <p>¿Estás seguro de que quieres eliminar el curso <strong> "{{ curso.titulo }}" </strong> ?</p>
         <form action="" method="POST" class="mt-4">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger">Eliminar</button>
