@@ -218,3 +218,52 @@ def eliminar_curso(request, curso_id):
         return redirect('cursos-instructor')
     
     return render(request, 'eliminar-curso.html', {'curso': curso})
+
+
+
+@login_required
+def contenido_curso_instructor(request, curso_id):
+    curso = get_object_or_404(Curso, id=curso_id, instructor=request.user.instructor)
+    nombre_usuario = request.user.username
+    cursos = Curso.objects.all()
+
+    if request.method == 'GET':
+        return render(request, 'vista-curso-intructor.html', {
+            'curso': curso, 
+            'nombres_usuarios': nombre_usuario,
+            'cursos': cursos
+        })
+    
+
+
+@login_required
+def crear_examen(request, curso_id):
+
+    nombre_usuario = request.user.username
+    curso = get_object_or_404(Curso, id=curso_id, instructor=request.user.instructor)
+    cursos = Curso.objects.all()
+
+    if request.method == 'GET':
+        return render(request, 'diseñar-examen.html', {
+            'curso': curso,
+            'nombres_usuarios': nombre_usuario,
+            'cursos': cursos 
+        })
+    
+
+
+@login_required
+def subir_material(request, curso_id):
+
+    nombre_usuario = request.user.username
+    curso = get_object_or_404(Curso, id=curso_id, instructor=request.user.instructor)
+    cursos = Curso.objects.all()
+
+    if request.method == 'GET':
+        return render(request, 'subir-material.html', {
+            'curso': curso,
+            'nombres_usuarios': nombre_usuario,
+            'cursos': cursos
+        })
+    
+    
