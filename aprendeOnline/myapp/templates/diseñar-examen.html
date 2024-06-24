@@ -2,10 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diseñar examen</title>
+    <title>Crear Examen</title>
 </head>
 <body>
-    <h1>Diseñar examen de curso</h1>
+    <h1>Crear Examen para {{ curso.nombre }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <label for="">Dijite la fecha en formato: YYYY-MM-DDTHH:MM</label>
+        <button type="submit">Guardar Examen</button>
+    </form>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
 </body>
 </html>

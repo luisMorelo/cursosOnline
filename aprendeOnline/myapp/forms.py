@@ -71,3 +71,16 @@ class MaterialForm(forms.ModelForm):
     class Meta:
         model = Material
         fields = ['titulo', 'archivo', 'descripcion']
+
+
+
+#Formulario para el modelo Examen
+class ExamenForm(forms.ModelForm):
+    
+    class Meta:
+        model = Examen
+        fields = ['titulo', 'descripcion', 'fecha_cierre']
+
+    widgets = {
+            'fecha_cierre': forms.DateTimeInput(attrs={'type': 'datetime-local'})
+        }

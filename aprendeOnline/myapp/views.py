@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render
-from .models import Curso, Inscripcion
+from .models import Curso, Inscripcion, Examen
 from rest_framework import generics, permissions
 from .serializers import cursoSerializer, InscripcionSerializer
-from .forms import LoginForms, CursoForm, InscripcionForm, SingUpForm, MaterialForm
+from .forms import LoginForms, CursoForm, InscripcionForm, SingUpForm, MaterialForm, ExamenForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 # Create your views here.
@@ -220,37 +220,52 @@ def eliminar_curso(request, curso_id):
     return render(request, 'eliminar-curso.html', {'curso': curso})
 
 
-
 @login_required
 def contenido_curso_instructor(request, curso_id):
     curso = get_object_or_404(Curso, id=curso_id, instructor=request.user.instructor)
     nombre_usuario = request.user.username
     cursos = Curso.objects.all()
+    examenes = Examen.objects.filter(curso=curso)  # Filtra los exámenes por el curso
 
     if request.method == 'GET':
         return render(request, 'vista-curso-intructor.html', {
             'curso': curso, 
             'nombres_usuarios': nombre_usuario,
-            'cursos': cursos
+            'cursos': cursos, 
+            'examenes': examenes  # Pasa los exámenes filtrados al contexto
         })
     
 
 
 @login_required
 def crear_examen(request, curso_id):
-
     nombre_usuario = request.user.username
     curso = get_object_or_404(Curso, id=curso_id, instructor=request.user.instructor)
     cursos = Curso.objects.all()
 
     if request.method == 'GET':
+        form = ExamenForm()
         return render(request, 'diseñar-examen.html', {
             'curso': curso,
             'nombres_usuarios': nombre_usuario,
-            'cursos': cursos 
+            'cursos': cursos,
+            'form': form
         })
-    
-
+    else:
+        form = ExamenForm(request.POST)
+        if form.is_valid():
+            examen = form.save(commit=False)
+            examen.curso = curso  # Asignar el curso correcto
+            examen.save()
+            return redirect('curso', curso_id=curso_id)  # Redirigir al curso correcto
+        else:
+            return render(request, 'diseñar-examen.html', {
+                'curso': curso,
+                'nombres_usuarios': nombre_usuario,
+                'cursos': cursos,
+                'form': form,
+                'error': 'No se pudo guardar el examen'
+            })
 
 
 
