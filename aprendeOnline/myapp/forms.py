@@ -4,7 +4,7 @@ from django.contrib.auth.forms import (
 )
 from django.contrib.auth.models import User
 from django.forms import ModelForm
-from .models import Curso, Inscripcion
+from .models import Curso, Inscripcion, Material, Examen
 
 
 
@@ -56,12 +56,18 @@ class CursoForm(forms.ModelForm):
 
 
 
-
-
-
 #Formulario para el modelo Inscripción
 class InscripcionForm(ModelForm):
     
     class Meta:
         model = Inscripcion
         fields = ['user', 'curso']
+
+
+
+#Formulario para el modelo Material
+class MaterialForm(forms.ModelForm):
+    
+    class Meta:
+        model = Material
+        fields = ['titulo', 'archivo', 'descripcion']

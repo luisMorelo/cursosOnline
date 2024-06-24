@@ -1,6 +1,9 @@
 from django.urls import path
+
+from aprendeOnline import settings
 from .import views
 from rest_framework.authtoken.views import obtain_auth_token
+from django.conf.urls.static import static
 
 
 
@@ -34,3 +37,7 @@ urlpatterns = [
     path('api/eliminar/<int:Curso_id>/', views.CourseDelete.as_view(), name='eliminar_curso'),
     path('api/crear/inscripcion/', views.InscripcionCreate.as_view(), name='crear-iscripcion'),
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

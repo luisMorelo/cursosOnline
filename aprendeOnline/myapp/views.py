@@ -1,10 +1,10 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render
 from .models import Curso, Inscripcion
 from rest_framework import generics, permissions
 from .serializers import cursoSerializer, InscripcionSerializer
-from .forms import LoginForms, CursoForm, InscripcionForm, SingUpForm
+from .forms import LoginForms, CursoForm, InscripcionForm, SingUpForm, MaterialForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 # Create your views here.
@@ -252,18 +252,36 @@ def crear_examen(request, curso_id):
     
 
 
+
+
+
 @login_required
 def subir_material(request, curso_id):
-
     nombre_usuario = request.user.username
     curso = get_object_or_404(Curso, id=curso_id, instructor=request.user.instructor)
     cursos = Curso.objects.all()
 
     if request.method == 'GET':
+        form = MaterialForm()
         return render(request, 'subir-material.html', {
             'curso': curso,
             'nombres_usuarios': nombre_usuario,
-            'cursos': cursos
+            'cursos': cursos, 
+            'form': form
         })
-    
-    
+    else:
+
+        form = MaterialForm(request.POST, request.FILES)  # manejo de request.FILES para subir archivo
+        if form.is_valid():
+            material = form.save(commit=False)
+            material.curso = curso  # Asignar el curso correcto
+            material.save()
+            return redirect('curso', curso_id=curso_id)  # Redirigir al curso correcto
+        else:
+            return render(request, 'subir-material.html', {
+                'curso': curso,
+                'nombres_usuarios': nombre_usuario,
+                'cursos': cursos, 
+                'form': form,
+                'error': 'No se pudo guardar el material'  
+            })

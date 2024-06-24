@@ -22,11 +22,8 @@ class Curso(models.Model):
     titulo = models.CharField(max_length=255)
     descripcion = models.TextField()
     fecha_creacion = models.DateTimeField(auto_now_add=True)
-    
-
     instructor = models.ForeignKey('Instructor', on_delete=models.CASCADE, related_name='cursos')
 
-   
     def __str__(self):
         return self.titulo
     
@@ -45,6 +42,9 @@ class Inscripcion(models.Model):
     def __str__(self):
         return f"{self.user.username} inscrito en {self.curso.titulo}"
 
+
+
+
 # Modelo para materiales del curso
 class Material(models.Model):
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name='materiales')
@@ -55,6 +55,8 @@ class Material(models.Model):
 
     def __str__(self):
         return self.titulo
+
+
 
 # Modelo para exámenes
 class Examen(models.Model):
