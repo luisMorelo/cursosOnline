@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render
-from .models import Curso, Inscripcion, Examen
+from .models import Curso, Inscripcion, Examen, Material
 from rest_framework import generics, permissions
 from .serializers import cursoSerializer, InscripcionSerializer
 from .forms import LoginForms, CursoForm, InscripcionForm, SingUpForm, MaterialForm, ExamenForm
@@ -95,14 +95,22 @@ def iniciar_sesion(request):
 @login_required
 def dashboard(request):
     nombre_usuario = request.user.username  # Obtiene el nombre de usuario del usuario autenticado
-    return render(request, 'usuario-dashboard.html', { 'nombres_usuarios': nombre_usuario })
+    cursos = Curso.objects.all()
+    return render(request, 'usuario-dashboard.html', { 
+        'nombres_usuarios': nombre_usuario, 
+        'cursos': cursos
+    })
 
 
 
 @login_required
 def dashboard_instructor(request):
     nombre_usuario = request.user.username  # Obtiene el nombre de usuario del usuario autenticado
-    return render(request, 'instructor-dashboard.html', { 'nombres_usuarios': nombre_usuario })
+    cursos = Curso.objects.all()
+    return render(request, 'instructor-dashboard.html', { 
+        'nombres_usuarios': nombre_usuario,
+        'cursos': cursos
+    })
 
 
 #cerrar sesion
@@ -131,6 +139,21 @@ def cursos_instructor(request):
     if request.method == 'GET':
         return render(request, 'cursos-instructor.html', {
             'form': form, 
+            'nombres_usuarios': nombre_usuario,
+            'cursos': cursos 
+        })
+    
+
+    
+#Vista de cursos a los que se ha inscrito un usuario
+@login_required
+def cursos_usuario(request):
+
+    cursos = Curso.objects.all()
+    nombre_usuario = request.user.username
+
+    if request.method == 'GET':
+        return render(request, 'cursos-usuario.html', {
             'nombres_usuarios': nombre_usuario,
             'cursos': cursos 
         })
@@ -226,13 +249,15 @@ def contenido_curso_instructor(request, curso_id):
     nombre_usuario = request.user.username
     cursos = Curso.objects.all()
     examenes = Examen.objects.filter(curso=curso)  # Filtra los exámenes por el curso
+    materiales = Material.objects.filter(curso=curso)  # Filtra los materiales por el curso
 
     if request.method == 'GET':
         return render(request, 'vista-curso-intructor.html', {
             'curso': curso, 
             'nombres_usuarios': nombre_usuario,
             'cursos': cursos, 
-            'examenes': examenes  # Pasa los exámenes filtrados al contexto
+            'examenes': examenes,  # Pasa los exámenes filtrados al contexto
+            'materiales': materiales  # Pasa los materiales filtrados al contexto
         })
     
 
