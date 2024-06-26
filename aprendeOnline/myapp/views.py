@@ -370,6 +370,7 @@ def contenido_curso_usuario(request, curso_id):
 
 
 #Realizar un examen
+@login_required
 def realizar_examen(request, examen_id):
     examen = get_object_or_404(Examen, id=examen_id)
     nombre_usuario = request.user.username
@@ -395,6 +396,9 @@ def realizar_examen(request, examen_id):
         'examen': examen,
         'form': form
     })
+
+
+
 
 
 @login_required

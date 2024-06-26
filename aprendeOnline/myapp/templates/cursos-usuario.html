@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Cursos a los que me he inscrito</h2>
+<h2>Cursos a los que te has inscrito</h2>
 <ul>
     {% for curso in cursos %}
         <li><a href="{% url 'contenido_curso_usuario' curso.id %}">{{ curso.titulo }}</a></li>
