@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render
-from .models import Curso, Inscripcion, Examen, Material
+from .models import Curso, Inscripcion, Examen, Material, Instructor, Respuesta, Opcion, Pregunta
 from rest_framework import generics, permissions
 from .serializers import cursoSerializer, InscripcionSerializer
-from .forms import LoginForms, CursoForm, InscripcionForm, SingUpForm, MaterialForm, ExamenForm
+from .forms import LoginForms, CursoForm, InscripcionForm, SingUpForm, MaterialForm, ExamenForm, RespuestaExamenForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 # Create your views here.
@@ -91,74 +91,6 @@ def iniciar_sesion(request):
             return render(request, 'login.html', {"form": form, "error": "Por favor, corrija los errores del formulario"})
     
 
-
-@login_required
-def dashboard(request):
-    nombre_usuario = request.user.username  # Obtiene el nombre de usuario del usuario autenticado
-    cursos = Curso.objects.all()
-    return render(request, 'usuario-dashboard.html', { 
-        'nombres_usuarios': nombre_usuario, 
-        'cursos': cursos
-    })
-
-
-
-@login_required
-def dashboard_instructor(request):
-    nombre_usuario = request.user.username  # Obtiene el nombre de usuario del usuario autenticado
-    cursos = Curso.objects.all()
-    return render(request, 'instructor-dashboard.html', { 
-        'nombres_usuarios': nombre_usuario,
-        'cursos': cursos
-    })
-
-
-#cerrar sesion
-@login_required
-def cerrar_sesion(request):
-    logout(request)
-    return redirect('mi_vista_principal')  # Redirigir a la página de inicio de sesión después de cerrar sesión
-
-
-
-#Vista pincipal sin loguearse
-def mi_vista_principal(request):
-    if request.method == 'GET':
-        return render(request, 'index.html')
-    
-
-    
-#Vista de cursos creados por el intructor
-@login_required
-def cursos_instructor(request):
-
-    cursos = Curso.objects.all()
-    nombre_usuario = request.user.username
-    form = CursoForm()
-
-    if request.method == 'GET':
-        return render(request, 'cursos-instructor.html', {
-            'form': form, 
-            'nombres_usuarios': nombre_usuario,
-            'cursos': cursos 
-        })
-    
-
-    
-#Vista de cursos a los que se ha inscrito un usuario
-@login_required
-def cursos_usuario(request):
-
-    cursos = Curso.objects.all()
-    nombre_usuario = request.user.username
-
-    if request.method == 'GET':
-        return render(request, 'cursos-usuario.html', {
-            'nombres_usuarios': nombre_usuario,
-            'cursos': cursos 
-        })
-
-
 #Crear una cuenta
 def registrarse(request):
 
@@ -180,7 +112,65 @@ def registrarse(request):
                 return render(request, 'register.html', {'form': form, 'exito': '¡El usuario fue creado exitósamente!'})
             else:
                 return render(request, 'register.html', {'form': form, 'error': 'Las contraseñas no coinciden, verifica e intentalo de nuevo'})
-            
+         
+
+@login_required
+def dashboard(request):
+    nombre_usuario = request.user.username  # Obtiene el nombre de usuario del usuario autenticado
+    cursos = Curso.objects.all()
+    return render(request, 'usuario-dashboard.html', { 
+        'nombres_usuarios': nombre_usuario, 
+        'cursos': cursos
+    })
+
+
+
+#Vista pincipal sin loguearse
+def mi_vista_principal(request):
+    if request.method == 'GET':
+        return render(request, 'index.html')
+
+
+
+
+#cerrar sesion
+@login_required
+def cerrar_sesion(request):
+    logout(request)
+    return redirect('mi_vista_principal')  # Redirigir a la página de inicio de sesión después de cerrar sesión
+
+
+
+
+@login_required
+def dashboard_instructor(request):
+    nombre_usuario = request.user.username  # Obtiene el nombre de usuario del usuario autenticado
+    cursos = Curso.objects.all()
+    return render(request, 'instructor-dashboard.html', { 
+        'nombres_usuarios': nombre_usuario,
+        'cursos': cursos
+    })
+
+
+
+
+#Vista de cursos creados por el intructor
+@login_required
+def cursos_instructor(request):
+
+    cursos = Curso.objects.all()
+    nombre_usuario = request.user.username
+    form = CursoForm()
+
+    if request.method == 'GET':
+        return render(request, 'cursos-instructor.html', {
+            'form': form, 
+            'nombres_usuarios': nombre_usuario,
+            'cursos': cursos 
+        })
+    
+
+    
 
 # como objetivo verificar si un usuario tiene el rol de instructor. 
 # Esto se logra comprobando si el usuario tiene un objeto relacionado de tipo Instructor. 
@@ -232,6 +222,9 @@ def editar_curso(request, curso_id):
     return render(request, 'editar-curso.html', {'form': form, 'curso': curso})
 
 
+
+
+
 @user_passes_test(es_instructor)
 @login_required
 def eliminar_curso(request, curso_id):
@@ -259,7 +252,8 @@ def contenido_curso_instructor(request, curso_id):
             'examenes': examenes,  # Pasa los exámenes filtrados al contexto
             'materiales': materiales  # Pasa los materiales filtrados al contexto
         })
-    
+
+
 
 
 @login_required
@@ -325,3 +319,98 @@ def subir_material(request, curso_id):
                 'form': form,
                 'error': 'No se pudo guardar el material'  
             })
+
+
+
+'''
+Vistas para el rol de usuario
+'''
+
+
+#Inscripción en un curso
+@login_required
+def inscribirse_curso(request, curso_id):
+    curso = get_object_or_404(Curso, id=curso_id)
+    Inscripcion.objects.get_or_create(user=request.user, curso=curso)
+    return redirect('cursos_usuario')
+
+
+#Vista de cursos a los que se ha inscrito un usuario
+@login_required
+def cursos_usuario(request):
+    inscripciones = Inscripcion.objects.filter(user=request.user)
+    cursos = [inscripcion.curso for inscripcion in inscripciones]
+    nombre_usuario = request.user.username
+
+    return render(request, 'cursos-usuario.html', {
+        'nombre_usuario': nombre_usuario,
+        'cursos': cursos
+    })
+
+
+
+
+#Ver contenido del curso
+@login_required
+def contenido_curso_usuario(request, curso_id):
+    # Verificar si el usuario está inscrito en el curso
+    inscripcion = get_object_or_404(Inscripcion, curso_id=curso_id, user=request.user)
+    curso = inscripcion.curso  # Obtener el curso a partir de la inscripción
+    nombre_usuario = request.user.username
+    examenes = Examen.objects.filter(curso=curso)  # Filtrar los exámenes por el curso
+    materiales = Material.objects.filter(curso=curso)  # Filtrar los materiales por el curso
+
+    return render(request, 'vista-curso-usuario.html', {
+        'curso': curso, 
+        'nombre_usuario': nombre_usuario,
+        'examenes': examenes,  # Pasar los exámenes filtrados al contexto
+        'materiales': materiales  # Pasar los materiales filtrados al contexto
+    })
+
+
+
+#Realizar un examen
+def realizar_examen(request, examen_id):
+    examen = get_object_or_404(Examen, id=examen_id)
+    nombre_usuario = request.user.username
+
+    if request.method == 'POST':
+        form = RespuestaExamenForm(request.POST)
+        if form.is_valid():
+            for pregunta in examen.preguntas.all():
+                opcion_id = request.POST.get(f'pregunta_{pregunta.id}')
+                if opcion_id:
+                    opcion = Opcion.objects.get(id=opcion_id)
+                    Respuesta.objects.create(
+                        user=request.user,
+                        pregunta=pregunta,
+                        opcion=opcion
+                    )
+            return redirect('contenido_curso_usuario', curso_id=examen.curso.id)
+    else:
+        form = RespuestaExamenForm()
+
+    return render(request, 'realizar-examen.html', {
+        'nombre_usuario': nombre_usuario,
+        'examen': examen,
+        'form': form
+    })
+
+
+@login_required
+def tomar_examen(request, examen_id):
+    examen = get_object_or_404(Examen, id=examen_id)
+    preguntas = Pregunta.objects.filter(examen=examen).prefetch_related('opciones')
+    
+    if request.method == 'POST':
+        for pregunta in preguntas:
+            opcion_id = request.POST.get(f'pregunta_{pregunta.id}')
+            if opcion_id:
+                opcion = get_object_or_404(Opcion, id=opcion_id)
+                Respuesta.objects.create(user=request.user, pregunta=pregunta, opcion=opcion)
+        return redirect('examen_resultado', examen_id=examen.id)
+    
+    return render(request, 'tomar-examen.html', {
+        'examen': examen,
+        'preguntas': preguntas
+    })

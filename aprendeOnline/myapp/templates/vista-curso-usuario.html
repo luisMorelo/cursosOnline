@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Curso: {{ curso.titulo }}</h2>
+<h3>Materiales</h3>
+<ul>
+    {% for material in materiales %}
+        <li>{{ material.titulo }}</li>
+    {% endfor %}
+</ul>
+<h3>Exámenes</h3>
+<ul>
+    {% for examen in examenes %}
+        <li><a href="{% url 'realizar_examen' examen.id %}">{{ examen.titulo }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock %}

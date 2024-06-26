@@ -4,7 +4,7 @@ from django.contrib.auth.forms import (
 )
 from django.contrib.auth.models import User
 from django.forms import ModelForm
-from .models import Curso, Inscripcion, Material, Examen
+from .models import Curso, Inscripcion, Material, Examen, Respuesta
 
 
 
@@ -84,3 +84,10 @@ class ExamenForm(forms.ModelForm):
     widgets = {
             'fecha_cierre': forms.DateTimeInput(attrs={'type': 'datetime-local'})
         }
+
+
+
+class RespuestaExamenForm(forms.ModelForm):
+    class Meta:
+        model = Respuesta
+        fields = ['opcion']

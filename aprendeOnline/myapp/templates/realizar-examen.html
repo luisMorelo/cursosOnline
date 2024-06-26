@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ examen.titulo }}</h2>
+<form method="post">
+    {% csrf_token %}
+    {% for pregunta in examen.preguntas.all %}
+        <div>
+            <p>{{ pregunta.texto }}</p>
+            {% for opcion in pregunta.opciones.all %}
+                <label>
+                    <input type="radio" name="pregunta_{{ pregunta.id }}" value="{{ opcion.id }}">
+                    {{ opcion.texto }}
+                </label>
+            {% endfor %}
+        </div>
+    {% endfor %}
+    <button type="submit">Enviar</button>
+</form>
+{% endblock %}
