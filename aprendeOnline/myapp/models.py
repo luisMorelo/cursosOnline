@@ -1,6 +1,7 @@
 from django.db import models
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 # Create your models here.
 
 
@@ -69,29 +70,13 @@ class Examen(models.Model):
     def __str__(self):
         return self.titulo
 
-# Modelo para preguntas del examen
-class Pregunta(models.Model):
-    examen = models.ForeignKey(Examen, on_delete=models.CASCADE, related_name='preguntas')
-    texto = models.TextField()
-
-    def __str__(self):
-        return self.texto
-
-# Modelo para opciones de respuesta
-class Opcion(models.Model):
-    pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE, related_name='opciones')
-    texto = models.CharField(max_length=255)
-    es_correcta = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.texto
 
 # Modelo para respuestas de los estudiantes
 class Respuesta(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
-    opcion = models.ForeignKey(Opcion, on_delete=models.CASCADE)
     fecha_respuesta = models.DateTimeField(auto_now_add=True)
+    examen = models.ForeignKey(Examen, on_delete=models.CASCADE, related_name='respuestas')
+    texto = models.CharField(max_length=255)
 
     def __str__(self):
-        return f"{self.user.username} respondió {self.opcion.texto} para {self.pregunta.texto}"
+        return self.texto

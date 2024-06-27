@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render
-from .models import Curso, Inscripcion, Examen, Material, Instructor, Respuesta, Opcion, Pregunta
+from .models import Curso, Inscripcion, Examen, Material, Instructor, Respuesta
 from rest_framework import generics, permissions
 from .serializers import cursoSerializer, InscripcionSerializer
 from .forms import LoginForms, CursoForm, InscripcionForm, SingUpForm, MaterialForm, ExamenForm, RespuestaExamenForm
@@ -258,33 +258,37 @@ def contenido_curso_instructor(request, curso_id):
 
 @login_required
 def crear_examen(request, curso_id):
-    nombre_usuario = request.user.username
     curso = get_object_or_404(Curso, id=curso_id, instructor=request.user.instructor)
     cursos = Curso.objects.all()
 
-    if request.method == 'GET':
-        form = ExamenForm()
-        return render(request, 'diseñar-examen.html', {
-            'curso': curso,
-            'nombres_usuarios': nombre_usuario,
-            'cursos': cursos,
-            'form': form
-        })
-    else:
+    if request.method == 'POST':
         form = ExamenForm(request.POST)
+        
+
         if form.is_valid():
             examen = form.save(commit=False)
-            examen.curso = curso  # Asignar el curso correcto
+            examen.curso = curso
             examen.save()
-            return redirect('curso', curso_id=curso_id)  # Redirigir al curso correcto
+            
+            
+            
+            return redirect('curso', curso_id=curso_id)
         else:
             return render(request, 'diseñar-examen.html', {
                 'curso': curso,
-                'nombres_usuarios': nombre_usuario,
                 'cursos': cursos,
                 'form': form,
-                'error': 'No se pudo guardar el examen'
+                'error': 'No se pudo guardar el examen con las opciones de pregunta'
             })
+    else:
+        form = ExamenForm()
+        
+
+    return render(request, 'diseñar-examen.html', {
+        'curso': curso,
+        'cursos': cursos,
+        'form': form
+    })
 
 
 
@@ -369,7 +373,6 @@ def contenido_curso_usuario(request, curso_id):
 
 
 
-#Realizar un examen
 @login_required
 def realizar_examen(request, examen_id):
     examen = get_object_or_404(Examen, id=examen_id)
@@ -378,15 +381,11 @@ def realizar_examen(request, examen_id):
     if request.method == 'POST':
         form = RespuestaExamenForm(request.POST)
         if form.is_valid():
-            for pregunta in examen.preguntas.all():
-                opcion_id = request.POST.get(f'pregunta_{pregunta.id}')
-                if opcion_id:
-                    opcion = Opcion.objects.get(id=opcion_id)
-                    Respuesta.objects.create(
-                        user=request.user,
-                        pregunta=pregunta,
-                        opcion=opcion
-                    )
+            Respuesta.objects.create(
+                user=request.user,
+                examen=examen,
+                texto=form.cleaned_data['texto']
+            )
             return redirect('contenido_curso_usuario', curso_id=examen.curso.id)
     else:
         form = RespuestaExamenForm()
@@ -399,22 +398,3 @@ def realizar_examen(request, examen_id):
 
 
 
-
-
-@login_required
-def tomar_examen(request, examen_id):
-    examen = get_object_or_404(Examen, id=examen_id)
-    preguntas = Pregunta.objects.filter(examen=examen).prefetch_related('opciones')
-    
-    if request.method == 'POST':
-        for pregunta in preguntas:
-            opcion_id = request.POST.get(f'pregunta_{pregunta.id}')
-            if opcion_id:
-                opcion = get_object_or_404(Opcion, id=opcion_id)
-                Respuesta.objects.create(user=request.user, pregunta=pregunta, opcion=opcion)
-        return redirect('examen_resultado', examen_id=examen.id)
-    
-    return render(request, 'tomar-examen.html', {
-        'examen': examen,
-        'preguntas': preguntas
-    })

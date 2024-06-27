@@ -3,7 +3,7 @@ from django.contrib.auth.forms import (
     UserCreationForm, AuthenticationForm, UsernameField
 )
 from django.contrib.auth.models import User
-from django.forms import ModelForm
+from django.forms import ModelForm, inlineformset_factory
 from .models import Curso, Inscripcion, Material, Examen, Respuesta
 
 
@@ -87,11 +87,6 @@ class ExamenForm(forms.ModelForm):
 
 
 
-class RespuestaExamenForm(forms.ModelForm):
-    
-
-    
-    class Meta:
-        model = Respuesta
-        fields = ['opcion']
-    
+#Formulario para el modelo Respuesta
+class RespuestaExamenForm(forms.Form):
+    texto = forms.CharField(widget=forms.Textarea, label='Respuesta')
