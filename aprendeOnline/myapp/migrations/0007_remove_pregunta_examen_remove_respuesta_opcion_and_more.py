@@ -25,9 +25,9 @@ class Migration(migrations.Migration):
             name='pregunta',
         ),
         migrations.AddField(
-            model_name='respuesta',
-            name='examen',
-            field=models.ForeignKey(default=django.utils.timezone.now, on_delete=django.db.models.deletion.CASCADE, related_name='respuestas', to='myapp.examen'),
+        model_name='respuesta',
+        name='examen',
+        field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='respuestas', to='myapp.examen'),
         ),
         migrations.AddField(
             model_name='respuesta',

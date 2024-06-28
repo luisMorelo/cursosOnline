@@ -76,7 +76,7 @@ class Respuesta(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     fecha_respuesta = models.DateTimeField(auto_now_add=True)
     examen = models.ForeignKey(Examen, on_delete=models.CASCADE, related_name='respuestas')
-    texto = models.CharField(max_length=255)
+    texto = models.CharField(max_length=257)
 
     def __str__(self):
         return self.texto
