@@ -386,7 +386,7 @@ def realizar_examen(request, examen_id):
                 examen=examen,
                 texto=form.cleaned_data['texto']
             )
-            return redirect('examen', curso_id=examen.curso.id)
+            return redirect('contenido_curso_usuario', curso_id=examen.curso.id)
     else:
         form = RespuestaExamenForm()
 
