@@ -15,9 +15,15 @@ Esta es una plataforma de cursos en línea desarrollada con Django que permite a
 
 ## Requisitos
 
-- Python 3.8+
-- Django 3.2+
-- Virtualenv
+asgiref==3.8.1  
+Django==4.2.13 
+djangorestframework==3.15.2 
+pillow==10.3.0 
+pip==21.2.4 
+setuptools==58.1.0 
+sqlparse ==0.5.0  
+typing_extensions==4.12.2 
+tzdata==2024.1 
 
 ## Instalación
 
